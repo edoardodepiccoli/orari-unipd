@@ -24173,60 +24173,97 @@ response = {
   legenda_divisa_obbligatori: true,
 };
 
-function formattaData(data) {
-  const giorno = data.slice(0, 2);
-  const mese = data.slice(3, 5);
-  const anno = data.slice(6);
+function formatDate(date) {
+  const day = date.slice(0, 2);
+  const month = date.slice(3, 5);
+  const year = date.slice(6);
 
-  const dataFormattata = `${anno}-${mese}-${giorno}`;
+  const formattedDate = `${year}-${month}-${day}`;
 
-  return dataFormattata;
+  return formattedDate;
 }
 
-let lezioni = [];
+let lessons = [];
 
 response.celle.forEach((entry) => {
-  const lezione = {
-    dataItaliana: entry.data,
-    data: formattaData(entry.data),
-    orario: {
-      oraInizio: entry.ora_inizio,
-      oraFine: entry.ora_fine,
+  const lesson = {
+    italianDate: entry.data,
+    date: formatDate(entry.data),
+    fullDate: entry.GiornoCompleto,
+    schedule: {
+      start: entry.ora_inizio,
+      end: entry.ora_fine,
     },
-    dettagli: {
-      corso: entry.nome_insegnamento,
-      giornoCompleto: entry.GiornoCompleto,
-      aula: entry.aula,
+    info: {
+      course: entry.nome_insegnamento,
+      room: entry.aula,
     },
   };
 
-  lezioni.push(lezione);
+  lessons.push(lesson);
 });
 
-lezioni = lezioni.sort((a, b) => {
-  if (a.data < b.data) {
+lessons = lessons.sort((a, b) => {
+  if (a.date < b.date) {
     return -1;
   }
-  if (a.data > b.data) {
+  if (a.date > b.date) {
     return 1;
   }
 
-  if (a.orario.oraInizio < b.orario.oraInizio) {
+  if (a.schedule.start < b.schedule.start) {
     return -1;
   }
-  if (a.orario.oraInizio > b.orario.oraInizio) {
+  if (a.schedule.start > b.schedule.start) {
     return 1;
   }
   return 0;
 });
 
-let giorni = {};
+let days = {};
 
-lezioni.forEach((entry) => {
-  if (!giorni[entry.data]) {
-    giorni[entry.data] = []; // Initialize the array if it doesn't exist
+lessons.forEach((entry) => {
+  if (!days[entry.fullDate]) {
+    days[entry.fullDate] = [];
   }
-  giorni[entry.data].push(entry); // Now push the entry
+  days[entry.fullDate].push(entry);
 });
 
-console.log(giorni);
+const daysContainer = document.querySelector(".days-container");
+
+for (let day in days) {
+  console.log(`\n${day}\n`);
+
+  const newDayLessonsContainer = document.createElement("div");
+  newDayLessonsContainer.classList.add("day-lessons-container");
+  newDayLessonsContainer.innerText = day;
+
+  for (let lesson of days[day]) {
+    console.log(lesson.info.course);
+    console.log(`${lesson.schedule.start}-${lesson.schedule.end}`);
+    console.log(lesson.info.room);
+
+    const newLessonContainer = document.createElement("div");
+    newLessonContainer.classList.add("lesson-container");
+
+    const courseSchedule = document.createElement("p");
+    courseSchedule.classList.add("course-schedule");
+    courseSchedule.innerText = `${lesson.schedule.start}-${lesson.schedule.end}`;
+
+    const courseName = document.createElement("p");
+    courseName.classList.add("course-name");
+    courseName.innerText = lesson.info.course;
+
+    const courseRoom = document.createElement("p");
+    courseRoom.classList.add("course-room");
+    courseRoom.innerText = lesson.info.room;
+
+    newLessonContainer.appendChild(courseSchedule);
+    newLessonContainer.appendChild(courseName);
+    newLessonContainer.appendChild(courseRoom);
+
+    newDayLessonsContainer.appendChild(newLessonContainer);
+  }
+
+  daysContainer.appendChild(newDayLessonsContainer);
+}

@@ -1,0 +1,67 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+    line-height: 1.5;
+
+    font-family: sans-serif;
+
+    border-radius: 8px;
+}
+
+main{
+    padding: 16px;
+    padding-top: 64px;
+}
+
+nav{
+    position: fixed;
+    top: 0;
+
+    background-color: white;
+    border-radius: 0;
+
+    min-width: 100%;
+    height: 64px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.day-lessons-container{
+    padding: 16px;
+    margin-bottom: 16px;
+
+    background-color: brown;
+    color: white;
+
+    font-size: 22px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.lesson-container{
+    background-color: white;
+    color: black;
+
+    padding: 8px;
+}
+
+.course-schedule{
+    font-weight: bolder;
+}
+
+.course-name{
+    font-size: 18px;
+}
+
+.course-room{
+    font-weight: light;
+
+    font-size: 12px;
+}
