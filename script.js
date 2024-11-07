@@ -17,37 +17,121 @@ function convertiData(data) {
   const giorno = data.slice(0, 2);
 }
 
+function formatDate(date) {
+  const day = date.slice(0, 2);
+  const month = date.slice(3, 5);
+  const year = date.slice(6);
+
+  const formattedDate = `${year}-${month}-${day}`;
+
+  return formattedDate;
+}
+
 async function main() {
   try {
     const response = await sendRequest(url, headers, body);
-    celle = response.celle;
+    console.log("got response!");
 
-    // console.log(celle);
+    let lessons = [];
 
-    const lezioni = [];
-
-    celle.forEach((entry) => {
-      // console.log(
-      //   `${entry.nome_insegnamento} / ${entry.GiornoCompleto} - ${entry.orario} / ${entry.aula}\n`
-      // );
-
-      const lezione = {
-        data: entry.data,
-        orario: {
-          oraInizio: entry.ora_inizio,
-          oraFine: entry.ora_fine,
+    response.celle.forEach((entry) => {
+      const lesson = {
+        italianDate: entry.data,
+        date: formatDate(entry.data),
+        fullDate: entry.GiornoCompleto,
+        schedule: {
+          start: entry.ora_inizio,
+          end: entry.ora_fine,
         },
-        dettagli: {
-          nomeInsegnamento: entry.nome_insegnamento,
-          giornoCompleto: entry.GiornoCompleto,
-          aula: entry.aula,
+        info: {
+          course: entry.nome_insegnamento,
+          room: entry.aula,
         },
       };
 
-      lezioni.push(lezione);
+      lessons.push(lesson);
     });
 
-    console.log(lezioni);
+    lessons = lessons.sort((a, b) => {
+      if (a.date < b.date) {
+        return -1;
+      }
+      if (a.date > b.date) {
+        return 1;
+      }
+
+      if (a.schedule.start < b.schedule.start) {
+        return -1;
+      }
+      if (a.schedule.start > b.schedule.start) {
+        return 1;
+      }
+      return 0;
+    });
+
+    let days = {};
+
+    lessons.forEach((entry) => {
+      if (!days[entry.fullDate]) {
+        days[entry.fullDate] = [];
+      }
+      days[entry.fullDate].push(entry);
+    });
+
+    const currentDate = new Date();
+    formattedCurrentDate = currentDate.toISOString().slice(0, 10);
+    console.log(formattedCurrentDate);
+
+    const daysContainer = document.querySelector(".days-container");
+
+    console.log(days);
+
+    for (let day in days) {
+      const newDayLessonsContainer = document.createElement("div");
+      newDayLessonsContainer.classList.add("day-lessons-container");
+      newDayLessonsContainer.innerText = day;
+
+      for (let lesson of days[day]) {
+        const newLessonContainer = document.createElement("div");
+        newLessonContainer.classList.add("lesson-container");
+
+        const courseSchedule = document.createElement("p");
+        courseSchedule.classList.add("course-schedule");
+        courseSchedule.innerText = `${lesson.schedule.start}-${lesson.schedule.end}`;
+
+        const courseName = document.createElement("p");
+        courseName.classList.add("course-name");
+        courseName.innerText = lesson.info.course;
+
+        const courseRoom = document.createElement("p");
+        courseRoom.classList.add("course-room");
+        courseRoom.innerText = lesson.info.room;
+
+        newLessonContainer.appendChild(courseSchedule);
+        newLessonContainer.appendChild(courseName);
+        newLessonContainer.appendChild(courseRoom);
+
+        newDayLessonsContainer.appendChild(newLessonContainer);
+      }
+
+      if (days[day][0].date === formattedCurrentDate) {
+        console.log(`current date is ${day}`);
+        newDayLessonsContainer.id = "current-date";
+
+        const currentDateReminder = document.querySelector(
+          ".current-date-reminder"
+        );
+        currentDateReminder.innerText = `Data odierna: ${day}`;
+      }
+
+      daysContainer.appendChild(newDayLessonsContainer);
+    }
+
+    const element = document.querySelector("#current-date");
+
+    const elementPosition =
+      element.getBoundingClientRect().top + window.scrollY - 200;
+    window.scrollTo({ top: elementPosition, behavior: "smooth" });
   } catch (error) {
     console.error("Error during request:", error);
   }
@@ -55,10 +139,11 @@ async function main() {
 
 async function sendRequest(url, headers, body) {
   try {
-    const response = await fetch(url, {
+    const response = await fetch("https://corsproxy.io/?" + url, {
       method: "POST",
       headers: headers,
       body: body,
+      mode: "cors",
     });
 
     if (!response.ok) {
