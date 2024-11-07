@@ -24229,20 +24229,20 @@ lessons.forEach((entry) => {
   days[entry.fullDate].push(entry);
 });
 
+const currentDate = new Date();
+formattedCurrentDate = currentDate.toISOString().slice(0, 10);
+console.log(formattedCurrentDate);
+
 const daysContainer = document.querySelector(".days-container");
 
-for (let day in days) {
-  console.log(`\n${day}\n`);
+console.log(days);
 
+for (let day in days) {
   const newDayLessonsContainer = document.createElement("div");
   newDayLessonsContainer.classList.add("day-lessons-container");
   newDayLessonsContainer.innerText = day;
 
   for (let lesson of days[day]) {
-    console.log(lesson.info.course);
-    console.log(`${lesson.schedule.start}-${lesson.schedule.end}`);
-    console.log(lesson.info.room);
-
     const newLessonContainer = document.createElement("div");
     newLessonContainer.classList.add("lesson-container");
 
@@ -24265,5 +24265,21 @@ for (let day in days) {
     newDayLessonsContainer.appendChild(newLessonContainer);
   }
 
+  if (days[day][0].date === formattedCurrentDate) {
+    console.log(`current date is ${day}`);
+    newDayLessonsContainer.id = "current-date";
+
+    const currentDateReminder = document.querySelector(
+      ".current-date-reminder"
+    );
+    currentDateReminder.innerText = `Data odierna: ${day}`;
+  }
+
   daysContainer.appendChild(newDayLessonsContainer);
 }
+
+const element = document.querySelector("#current-date");
+
+const elementPosition =
+  element.getBoundingClientRect().top + window.scrollY - 200;
+window.scrollTo({ top: elementPosition, behavior: "smooth" });

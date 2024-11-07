@@ -65,3 +65,7 @@ nav{
 
     font-size: 12px;
 }
+
+#current-date{
+    background-color: orange;
+}
