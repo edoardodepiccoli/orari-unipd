@@ -1,4 +1,7 @@
-const url = "https://agendastudentiunipd.easystaff.it/grid_call.php";
+// const corsApiHost = "https://corsproxy.io/?";
+const corsApiHost = "https://cors-anywhere.herokuapp.com/";
+const url =
+  corsApiHost + "https://agendastudentiunipd.easystaff.it/grid_call.php";
 
 const headers = {
   "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
@@ -80,11 +83,8 @@ async function main() {
 
     const currentDate = new Date();
     formattedCurrentDate = currentDate.toISOString().slice(0, 10);
-    console.log(formattedCurrentDate);
 
     const daysContainer = document.querySelector(".days-container");
-
-    console.log(days);
 
     for (let day in days) {
       const newDayLessonsContainer = document.createElement("div");
@@ -115,7 +115,6 @@ async function main() {
       }
 
       if (days[day][0].date === formattedCurrentDate) {
-        console.log(`current date is ${day}`);
         newDayLessonsContainer.id = "current-date";
 
         const currentDateReminder = document.querySelector(
@@ -139,7 +138,7 @@ async function main() {
 
 async function sendRequest(url, headers, body) {
   try {
-    const response = await fetch("https://corsproxy.io/?" + url, {
+    const response = await fetch(url, {
       method: "POST",
       headers: headers,
       body: body,
