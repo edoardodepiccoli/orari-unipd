@@ -1,5 +1,5 @@
-// const corsApiHost = "https://corsproxy.io/?";
-const corsApiHost = "https://cors-anywhere.herokuapp.com/";
+const corsApiHost = "https://corsproxy.io/?";
+// const corsApiHost = "https://cors-anywhere.herokuapp.com/";
 const url =
   corsApiHost + "https://agendastudentiunipd.easystaff.it/grid_call.php";
 
